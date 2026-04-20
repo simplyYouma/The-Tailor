@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Inter:wght@400;500;700;900&family=Outfit:wght@400;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* 🎨 Maison de l'Élégance & Yumi Security */
+  --color-background: #FAF9F6;
+  --color-foreground: #1C1917;
+  
+  --color-brand-red: #E11D48; /* Yumi Security Red */
+  
+  /* 🛡️ Yumi Elite Security Core */
+  --color-brand-red: #E11D48;
+  --color-security-primary: var(--color-brand-red);
+  --color-security-dark: #0F172A;
+  --color-security-light: #F8FAFC;
+  
+  --color-primary: #B68D40; /* Antique Gold */
+  --color-primary-foreground: #FFFFFF;
+  --color-border: #E7E5E4;
+  
+  --font-serif: "Baskervville", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  --animate-shake: shake 0.5s ease-in-out;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, .font-serif {
+    @apply font-serif;
+  }
+}
+
+/* 🏺 Historical Couture Utilities */
+.text-luxury {
+  @apply tracking-[0.2em] uppercase font-bold text-[10px];
+}
+
+.card-couture {
+  @apply bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)];
+}
+
+.glass-light {
+  @apply bg-white/70 backdrop-blur-2xl border border-white/20;
+}
+
+.btn-luxury {
+  @apply h-12 px-8 bg-primary hover:bg-primary/90 text-white rounded-full font-bold uppercase tracking-widest text-[11px] transition-all active:scale-95 shadow-lg shadow-primary/20;
+}
+
+/* Custom Scrollbar - Soft Edition */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E7E5E4;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B68D40;
+}
+
+/* 🎬 Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromBottom {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slideInFromBottom;
+}
+
+.duration-300 {
+  animation-duration: 300ms;
+}
+
+.duration-500 {
+  animation-duration: 500ms;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E7E5E4;
+  border-radius: 10px;
+}
+

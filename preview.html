@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #333; color: white; text-align: center; font-family: sans-serif; }
+  .grid { display: flex; gap: 20px; justify-content: center; padding: 20px; }
+  .box { text-align: center; }
+  img { width: 300px; height: 300px; border: 1px solid red; background: yellow; }
+</style>
+</head>
+<body>
+  <h2>Icon Preview</h2>
+  <div class="grid">
+    <div class="box">
+      <h3>Original logo_nobg.svg</h3>
+      <img src="public/logo_nobg.svg">
+    </div>
+    <div class="box">
+      <h3>Generated icon.svg</h3>
+      <img src="src-tauri/icons/icon.svg">
+    </div>
+    <div class="box">
+      <h3>Generated icon.png</h3>
+      <img src="src-tauri/icons/icon.png">
+    </div>
+  </div>
+</body>
+</html>
