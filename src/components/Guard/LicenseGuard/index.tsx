@@ -83,9 +83,8 @@ export const LicenseGuard: React.FC<LicenseGuardProps> = ({ children }) => {
                     syncError={license.syncError}
                     onSync={async () => {
                         license.setSyncError(false);
-                        const oldSync = localStorage.getItem('yumi_last_sync');
-                        await license.verifyWithHub();
-                        if (localStorage.getItem('yumi_last_sync') !== oldSync) {
+                        const synced = await license.verifyWithHub();
+                        if (synced) {
                             window.location.reload();
                         } else {
                             license.setSyncError(true);

@@ -8,6 +8,7 @@ import { useUIStore } from '@/store/uiStore';
 import { useCatalogStore } from '@/store/catalogStore';
 import { cn } from '@/lib/utils';
 import { MODEL_CATEGORIES, MODEL_GENDERS } from '@/types/constants';
+import { useModelCategoryStore } from '@/store/modelCategoryStore';
 import type { ModelCategory, Gender, CatalogModel } from '@/types';
 import * as catalogService from '@/services/catalogService';
 
@@ -17,6 +18,9 @@ export function ModelForm() {
   const isEdit = !!modalPayload;
 
   const fetchModels = useCatalogStore((s) => s.fetchModels);
+
+  const dynamicCats = useModelCategoryStore((s) => s.categories);
+  const categoryOptions = dynamicCats.length > 0 ? dynamicCats.map(c => c.name) : MODEL_CATEGORIES;
 
   const [name, setName] = useState(modalPayload?.name ?? '');
   const [description, setDescription] = useState(modalPayload?.description ?? '');
@@ -108,7 +112,7 @@ export function ModelForm() {
           <div>
             <label className="block text-[10px] font-black uppercase tracking-[0.3em] text-[#A8A29E] mb-2">Catégorie</label>
             <div className="grid grid-cols-3 gap-2">
-              {MODEL_CATEGORIES.map((cat) => (
+              {categoryOptions.map((cat) => (
                 <button
                   key={cat}
                   type="button"

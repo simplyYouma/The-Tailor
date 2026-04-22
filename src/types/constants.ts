@@ -31,6 +31,7 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
   'Cash',
   'Orange Money',
   'Moov Money',
+  'Wave',
   'Carte',
   'Autre',
 ];
@@ -89,18 +90,18 @@ export const BACKUP_RETENTION_DAYS = 7;
 
 /** Palette de couleurs premium pour les commandes individuelles. */
 export const ITEM_PALETTE = [
-  '#E2725B', // Terracotta
-  '#87A96B', // Sage
-  '#000080', // Navy
-  '#D4AF37', // Gold
-  '#708090', // Slate
-  '#800000', // Maroon
-  '#50C878', // Emerald
-  '#8E4585', // Plum
-  '#C2B280', // Sand
-  '#006994', // Deep Sea
-  '#4B0082', // Indigo
-  '#FF8C00', // Dark Orange
+  '#EF4444', // Red
+  '#F97316', // Orange
+  '#EAB308', // Yellow
+  '#84CC16', // Lime
+  '#22C55E', // Green
+  '#14B8A6', // Teal
+  '#06B6D4', // Cyan
+  '#3B82F6', // Blue
+  '#6366F1', // Indigo
+  '#A855F7', // Purple
+  '#EC4899', // Pink
+  '#78350F', // Brown
 ];
 
 /** Retourne une couleur stable basée sur l'ID de l'item. */

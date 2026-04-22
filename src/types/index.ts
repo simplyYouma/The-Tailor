@@ -79,19 +79,8 @@ export interface CatalogModelCreatePayload {
   image_paths?: string[];
 }
 
-export type ModelCategory =
-  | 'Boubou'
-  | 'Bazin'
-  | 'Costume'
-  | 'Robe'
-  | 'Robe de Mariée'
-  | 'Ligne Homme'
-  | 'Abaya'
-  | 'Chemise'
-  | 'Pantalon'
-  | 'Jupe'
-  | 'Ensemble'
-  | 'Autre';
+/** Catégorie de modèle — dynamique, gérée depuis Paramètres. */
+export type ModelCategory = string;
 
 // ─── Measurements (Cabinet de Mesures) ──────────────────────────────
 
@@ -221,6 +210,7 @@ export type PaymentMethod =
   | 'Cash'
   | 'Orange Money'
   | 'Moov Money'
+  | 'Wave'
   | 'Carte'
   | 'Autre';
 
@@ -232,6 +222,7 @@ export interface Payment {
   payment_date: string;
   client_name?: string; // Optional field for joins
   model_image?: string; // Optional field for model thumbnail
+  source?: 'order' | 'fabric';
 }
 
 export interface PaymentCreatePayload {
@@ -358,4 +349,6 @@ export type ModalType =
   | 'model_detail'
   | 'catalog_picker'
   | 'login_form'
+  | 'fabric_sale'
+  | 'fabric_sale_receipt'
   | null;

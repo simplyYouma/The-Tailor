@@ -28,6 +28,7 @@ function createMockDb() {
     order_notes: [],
     sync_queue: [],
     fabrics: [],
+    fabric_sales: [],
     audit_logs: [],
     settings: [
       { key: 'atelier_name', value: 'The Tailor' },
@@ -45,6 +46,33 @@ function createMockDb() {
     users: [
       { id: 'admin', username: 'admin', full_name: 'Admin Atelier', role: 'admin', pin_hash: '0000', is_blocked: 0, created_at: new Date().toISOString() },
       { id: 'team', username: 'equipe', full_name: 'Équipe Production', role: 'employee', pin_hash: '1234', is_blocked: 0, created_at: new Date().toISOString() },
+    ],
+    fabric_types: [
+      { id: 1, name: 'Bazin Riche', sequence: 1 },
+      { id: 2, name: 'Wax', sequence: 2 },
+      { id: 3, name: 'Brode', sequence: 3 },
+      { id: 4, name: 'Brocart', sequence: 4 },
+      { id: 5, name: 'Lépi', sequence: 5 },
+      { id: 6, name: 'Soie', sequence: 6 },
+      { id: 7, name: 'Lin', sequence: 7 },
+      { id: 8, name: 'Laine', sequence: 8 },
+      { id: 9, name: 'Coton', sequence: 9 },
+      { id: 10, name: 'Dentelle', sequence: 10 },
+      { id: 11, name: 'Autre', sequence: 11 },
+    ],
+    model_categories: [
+      { id: 1, name: 'Boubou', sequence: 1 },
+      { id: 2, name: 'Bazin', sequence: 2 },
+      { id: 3, name: 'Costume', sequence: 3 },
+      { id: 4, name: 'Robe', sequence: 4 },
+      { id: 5, name: 'Robe de Mariée', sequence: 5 },
+      { id: 6, name: 'Ligne Homme', sequence: 6 },
+      { id: 7, name: 'Abaya', sequence: 7 },
+      { id: 8, name: 'Chemise', sequence: 8 },
+      { id: 9, name: 'Pantalon', sequence: 9 },
+      { id: 10, name: 'Jupe', sequence: 10 },
+      { id: 11, name: 'Ensemble', sequence: 11 },
+      { id: 12, name: 'Autre', sequence: 12 },
     ],
     measurement_types: [
       { id: 1, label: 'Encolure', key_name: 'neck', category: 'Haut', sequence: 1 },
@@ -357,6 +385,21 @@ export async function initDatabase(): Promise<AppDatabase> {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
+      -- 🛒 FABRIC SALES (Vente au comptoir)
+      CREATE TABLE IF NOT EXISTS fabric_sales (
+        id TEXT PRIMARY KEY,
+        fabric_id TEXT NOT NULL,
+        client_id TEXT,
+        customer_label TEXT,
+        meters REAL NOT NULL,
+        unit_price REAL NOT NULL,
+        total REAL NOT NULL,
+        method TEXT DEFAULT 'Cash',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (fabric_id) REFERENCES fabrics(id),
+        FOREIGN KEY (client_id) REFERENCES clients(id)
+      );
+
       -- 🧵 ORDERS
       CREATE TABLE IF NOT EXISTS orders (
         id TEXT PRIMARY KEY,
@@ -488,6 +531,57 @@ export async function initDatabase(): Promise<AppDatabase> {
     await runMigration(`ALTER TABLE users ADD COLUMN is_blocked BOOLEAN DEFAULT 0`);
     await runMigration(`ALTER TABLE settings ADD COLUMN maintenance_mode BOOLEAN DEFAULT 0`);
     await runMigration(`ALTER TABLE settings ADD COLUMN role_permissions TEXT`);
+    await runMigration(`CREATE TABLE IF NOT EXISTS fabric_types (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      sequence INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Seed default fabric types if empty
+    try {
+      const existingFT = await db.select<any[]>('SELECT id FROM fabric_types LIMIT 1');
+      if (existingFT.length === 0) {
+        const defaults = ['Bazin Riche','Wax','Brode','Brocart','Lépi','Soie','Lin','Laine','Coton','Dentelle','Autre'];
+        for (let i = 0; i < defaults.length; i++) {
+          await db.execute(`INSERT INTO fabric_types (name, sequence) VALUES ($1, $2)`, [defaults[i], i + 1]);
+        }
+      }
+    } catch (e) {
+      console.error('[DB] Seed fabric_types failed:', e);
+    }
+
+    await runMigration(`CREATE TABLE IF NOT EXISTS model_categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE NOT NULL,
+      sequence INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Seed default categories if empty
+    try {
+      const existingCats = await db.select<any[]>('SELECT id FROM model_categories LIMIT 1');
+      if (existingCats.length === 0) {
+        const defaults = ['Boubou','Bazin','Costume','Robe','Robe de Mariée','Ligne Homme','Abaya','Chemise','Pantalon','Jupe','Ensemble','Autre'];
+        for (let i = 0; i < defaults.length; i++) {
+          await db.execute(`INSERT INTO model_categories (name, sequence) VALUES ($1, $2)`, [defaults[i], i + 1]);
+        }
+      }
+    } catch (e) {
+      console.error('[DB] Seed model_categories failed:', e);
+    }
+
+    await runMigration(`CREATE TABLE IF NOT EXISTS fabric_sales (
+      id TEXT PRIMARY KEY,
+      fabric_id TEXT NOT NULL,
+      client_id TEXT,
+      customer_label TEXT,
+      meters REAL NOT NULL,
+      unit_price REAL NOT NULL,
+      total REAL NOT NULL,
+      method TEXT DEFAULT 'Cash',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
     
     // --- SPECIAL MIGRATION: USERS Table Check Constraint (v2.40) ---
     // If the old DB only allows 'admin','employee', we must recreate it to allow 'manager'

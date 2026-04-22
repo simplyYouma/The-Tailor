@@ -17,7 +17,8 @@ import * as fabricService from '@/services/fabricService';
 import type { Fabric } from '@/types';
 import { cn } from '@/lib/utils';
 import { CURRENCY, FABRIC_TYPES, FABRIC_STOCK_LIMITS, PAGINATION } from '@/types/constants';
-import { Trash2 } from 'lucide-react';
+import { useFabricTypeStore } from '@/store/fabricTypeStore';
+import { Trash2, ShoppingCart } from 'lucide-react';
 
 export function FabricStock() {
   const [fabrics, setFabrics] = useState<Fabric[]>([]);
@@ -84,6 +85,8 @@ export function FabricStock() {
   };
 
   const lowStockThreshold = FABRIC_STOCK_LIMITS.LOW;
+  const dynamicTypes = useFabricTypeStore((s) => s.types);
+  const fabricTypeList: string[] = dynamicTypes.length > 0 ? dynamicTypes.map(t => t.name) : FABRIC_TYPES;
 
   return (
     <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-700">
@@ -130,7 +133,7 @@ export function FabricStock() {
             active={filterType === 'Tous'} 
             onClick={() => { setFilterType('Tous'); setCurrentPage(1); }} 
           />
-          {FABRIC_TYPES.slice(0, 5).map(type => (
+          {fabricTypeList.slice(0, 5).map(type => (
             <FilterChip 
               key={type}
               label={type} 
@@ -138,11 +141,11 @@ export function FabricStock() {
               onClick={() => { setFilterType(type); setCurrentPage(1); }} 
             />
           ))}
-          {FABRIC_TYPES.length > 5 && (
-            <Dropdown 
+          {fabricTypeList.length > 5 && (
+            <Dropdown
               label="Plus..."
-              options={FABRIC_TYPES.slice(5).map(t => ({ id: t, label: t }))}
-              selectedId={FABRIC_TYPES.indexOf(filterType) >= 5 ? filterType : undefined}
+              options={fabricTypeList.slice(5).map(t => ({ id: t, label: t }))}
+              selectedId={fabricTypeList.indexOf(filterType) >= 5 ? filterType : undefined}
               onSelect={(opt) => { setFilterType(opt.id); setCurrentPage(1); }}
               className="ml-1"
             />
@@ -230,11 +233,12 @@ export function FabricStock() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
           {paginatedFabrics.map((fabric) => (
-            <FabricCard 
-              key={fabric.id} 
-              fabric={fabric} 
+            <FabricCard
+              key={fabric.id}
+              fabric={fabric}
               onEdit={() => openModal('fabric_form', fabric)}
               onDelete={() => handleDelete(fabric.id, fabric.name)}
+              onSell={() => openModal('fabric_sale', fabric)}
               lowStockThreshold={lowStockThreshold}
             />
           ))}
@@ -313,8 +317,9 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-function FabricCard({ fabric, onEdit, onDelete, lowStockThreshold }: { fabric: Fabric; onEdit: () => void; onDelete: () => void; lowStockThreshold: number }) {
+function FabricCard({ fabric, onEdit, onDelete, onSell, lowStockThreshold }: { fabric: Fabric; onEdit: () => void; onDelete: () => void; onSell: () => void; lowStockThreshold: number }) {
   const isLowStock = fabric.stock_quantity <= lowStockThreshold;
+  const isOutOfStock = fabric.stock_quantity <= 0;
 
   return (
     <div className="group bg-white border border-[#E7E5E4] rounded-[2.5rem] overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 relative">
@@ -385,7 +390,7 @@ function FabricCard({ fabric, onEdit, onDelete, lowStockThreshold }: { fabric: F
 
         {/* Progress Bar */}
         <div className="mt-4 h-1.5 bg-[#FAF9F6] rounded-full overflow-hidden border border-[#E7E5E4]/50">
-          <div 
+          <div
              className={cn(
                "h-full transition-all duration-1000 ease-out",
                isLowStock ? "bg-red-500" : "bg-[#B68D40]"
@@ -393,6 +398,16 @@ function FabricCard({ fabric, onEdit, onDelete, lowStockThreshold }: { fabric: F
              style={{ width: `${Math.min((fabric.stock_quantity / 20) * 100, 100)}%` }} // Base 20m as "full" for visual
           />
         </div>
+
+        {/* Sell CTA */}
+        <button
+          onClick={onSell}
+          disabled={isOutOfStock}
+          className="mt-5 w-full h-11 bg-[#1C1917] text-white rounded-2xl flex items-center justify-center gap-2 font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#B68D40] disabled:opacity-30 disabled:hover:bg-[#1C1917] transition-all active:scale-[0.98]"
+        >
+          <ShoppingCart className="w-3.5 h-3.5" />
+          {isOutOfStock ? 'Rupture' : 'Vendre'}
+        </button>
       </div>
     </div>
   );

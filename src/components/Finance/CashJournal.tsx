@@ -446,7 +446,7 @@ export function CashJournal() {
                             <p className="text-3xl font-serif italic text-[#1C1917] tracking-tight">{(p.amount || 0).toLocaleString()} <span className="text-[12px] uppercase font-black not-italic opacity-20 ml-1">{CURRENCY}</span></p>
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-[#1C1917] text-white px-2.5 py-1 rounded-lg shadow-sm">{p.method}</span>
                          </div>
-                         <p className="text-[11px] text-[#78716C] font-medium">De <span className="font-bold text-[#1C1917] uppercase tracking-wider">{p.client_name || 'Inconnu'}</span> <span className="mx-2 opacity-20">|</span> <span className="text-[#A8A29E] font-black uppercase tracking-widest text-[9px]">Ref CMD-{p.order_id.slice(0, 4)}</span></p>
+                         <p className="text-[11px] text-[#78716C] font-medium">De <span className="font-bold text-[#1C1917] uppercase tracking-wider">{p.client_name || 'Inconnu'}</span> <span className="mx-2 opacity-20">|</span> <span className="text-[#A8A29E] font-black uppercase tracking-widest text-[9px]">Ref {p.source === 'fabric' ? 'TISSU' : 'CMD'}-{p.order_id.slice(0, 4)}</span></p>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1.5 pr-4">

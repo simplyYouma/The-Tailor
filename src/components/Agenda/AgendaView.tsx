@@ -23,8 +23,10 @@ import {
   X,
   Wallet,
   ChevronRightCircle,
-  Search
+  Search,
+  AlertTriangle
 } from 'lucide-react';
+import { differenceInCalendarDays, startOfDay } from 'date-fns';
 import { useOrderStore } from '@/store/orderStore';
 import { useUIStore } from '@/store/uiStore';
 import { STATUS_COLORS, getItemColor, CURRENCY } from '@/types/constants';
@@ -226,7 +228,7 @@ export function AgendaView() {
         {/* Weeks Rows */}
         <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
           {weeks.map((week, wIdx) => (
-            <div key={wIdx} className="relative flex-1 min-h-[160px] border-b border-[#E7E5E4] last:border-0 group/week">
+            <div key={wIdx} className="relative flex-1 min-h-[190px] border-b border-[#E7E5E4] last:border-0 group/week">
               {/* Day Cells Grid */}
               <div className="absolute inset-0 grid grid-cols-7 h-full">
                 {week.map((day) => {
@@ -234,10 +236,10 @@ export function AgendaView() {
                   const isTodayDay = isSameDay(day, new Date());
 
                   return (
-                    <div 
+                    <div
                       key={day.toISOString()}
                       className={cn(
-                        "p-4 border-r border-[#E7E5E4] transition-colors flex flex-col gap-2 h-full last:border-r-0",
+                        "p-3 border-r border-[#E7E5E4] transition-colors flex flex-col gap-2 h-full last:border-r-0 overflow-hidden min-w-0",
                         !isSameDay(startOfMonth(day), startOfMonth(currentMonth)) && "bg-[#FAF9F6]/20 opacity-30 cursor-default",
                         isSameDay(startOfMonth(day), startOfMonth(currentMonth)) && "hover:bg-[#FAF9F6]/50"
                       )}
@@ -251,11 +253,14 @@ export function AgendaView() {
                       
                       {/* Delivery Card */}
                       <div className="space-y-1.5 z-10">
-                        {dayOrders.slice(0, 3).map((order) => {
+                        {dayOrders.slice(0, dayOrders.length > 3 ? 2 : 3).map((order) => {
                           const thumbnail = order.reference_images?.[0] || order.model_images?.[0];
                           const isDelivered = order.status === 'Livré';
                           const isCancelled = order.status === 'Annulé';
                           const isHistorical = isDelivered || isCancelled;
+                          const deliveryDate = order.delivery_date ? parseISO(order.delivery_date) : null;
+                          const daysLate = deliveryDate ? differenceInCalendarDays(startOfDay(new Date()), startOfDay(deliveryDate)) : 0;
+                          const isOverdue = !isHistorical && daysLate > 0;
 
                           return (
                             <button
@@ -265,11 +270,18 @@ export function AgendaView() {
                                 openModal('order_detail', order);
                               }}
                               className={cn(
-                                "w-full text-left p-2.5 rounded-xl bg-white border border-[#E7E5E4] shadow-sm hover:border-[#B68D40]/30 hover:shadow-xl transition-all group/item overflow-hidden relative",
+                                "w-full text-left p-2.5 rounded-xl bg-white border shadow-sm hover:shadow-xl transition-all group/item overflow-hidden relative",
+                                isOverdue ? "border-red-400 ring-2 ring-red-500/20 animate-pulse" : "border-[#E7E5E4] hover:border-[#B68D40]/30",
                                 isDelivered && "opacity-50",
                                 isCancelled && "opacity-30 grayscale"
                               )}
                             >
+                               {isOverdue && (
+                                 <div className="absolute -top-1 -right-1 z-10 flex items-center gap-0.5 px-1.5 py-0.5 bg-red-600 text-white rounded-full shadow-md text-[8px] font-black uppercase tracking-wider">
+                                   <AlertTriangle className="w-2 h-2" />
+                                   <span>+{daysLate}J</span>
+                                 </div>
+                               )}
                                <div className="flex items-center gap-2">
                                   {thumbnail ? (
                                     <img src={thumbnail} className={cn("w-8 h-10 object-cover object-top rounded-md flex-shrink-0", isHistorical && "opacity-60")} alt="" />
@@ -281,7 +293,8 @@ export function AgendaView() {
                                   <div className="min-w-0 flex-1">
                                      <div className="flex items-center justify-between gap-1">
                                        <p className={cn(
-                                         "text-[10px] font-bold text-[#1C1917] truncate leading-tight",
+                                         "text-[10px] font-bold truncate leading-tight",
+                                         isOverdue ? "text-red-700" : "text-[#1C1917]",
                                          isCancelled && "line-through text-red-800/60"
                                        )}>
                                          {order.client_name || (order.id === 'demo-1' ? 'Client Démo' : 'Client...')}
@@ -289,8 +302,11 @@ export function AgendaView() {
                                        {isDelivered && <CheckCircle2 className="w-2.5 h-2.5 text-green-600 shrink-0" />}
                                        {isCancelled && <XCircle className="w-2.5 h-2.5 text-red-400 shrink-0" />}
                                      </div>
-                                     <p className="text-[8px] text-[#A8A29E] uppercase tracking-widest truncate">
-                                       {order.model_category || (order.id === 'demo-1' ? 'Luxe ✨' : 'Sur Mesure')}
+                                     <p className={cn(
+                                       "text-[8px] uppercase tracking-widest truncate",
+                                       isOverdue ? "text-red-500 font-black" : "text-[#A8A29E]"
+                                     )}>
+                                       {isOverdue ? `En retard de ${daysLate}j` : (order.model_category || (order.id === 'demo-1' ? 'Luxe ✨' : 'Sur Mesure'))}
                                      </p>
                                   </div>
                                </div>
@@ -299,14 +315,14 @@ export function AgendaView() {
                         })}
 
                         {dayOrders.length > 3 && (
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedDay(day);
                             }}
                             className="w-full py-1.5 px-3 rounded-lg bg-[#FAF9F6] border border-[#E7E5E4] text-[9px] font-black uppercase tracking-widest text-[#B68D40] hover:bg-[#B68D40] hover:text-white transition-all animate-in fade-in slide-in-from-bottom-1"
                           >
-                            + {dayOrders.length - 3} dossiers
+                            + {dayOrders.length - 2} dossiers
                           </button>
                         )}
                       </div>
@@ -316,17 +332,28 @@ export function AgendaView() {
               </div>
 
               {/* Multi-day Timeline Bars Overlay */}
-              <div className="absolute inset-x-0 top-14 bottom-4 pointer-events-none px-4 flex flex-col gap-1 justify-center">
-                 {filteredOrders.filter(o => {
-                    if (!o.created_at || !o.delivery_date) return false;
-                    try {
-                      const start = parseISO(o.created_at);
-                      const end = parseISO(o.delivery_date);
-                      const weekStart = week[0];
-                      const weekEnd = week[6];
-                      return (start <= weekEnd && end >= weekStart);
-                    } catch { return false; }
-                 }).slice(0, 4).map((order) => {
+              {(() => {
+                const weekBars = filteredOrders.filter(o => {
+                  if (!o.created_at || !o.delivery_date) return false;
+                  try {
+                    const start = parseISO(o.created_at);
+                    const end = parseISO(o.delivery_date);
+                    return (start <= week[6] && end >= week[0]);
+                  } catch { return false; }
+                });
+                const count = weekBars.length;
+                const barH = count <= 8 ? 'h-1.5' : count <= 15 ? 'h-1' : count <= 25 ? 'h-0.5' : 'h-px';
+                const gapCls = count <= 8 ? 'gap-1' : count <= 15 ? 'gap-0.5' : 'gap-px';
+                // Secondary hash → brightness jitter (break ties when two orders share the same palette hue)
+                const jitter = (id: string) => {
+                  let h = 5381;
+                  for (let i = 0; i < id.length; i++) h = (h * 33) ^ id.charCodeAt(i);
+                  const n = Math.abs(h) % 3;
+                  return n === 0 ? 1 : n === 1 ? 0.72 : 1.28;
+                };
+                return (
+                  <div className={cn("absolute inset-x-0 top-14 bottom-4 pointer-events-none px-4 flex flex-col justify-center", gapCls)}>
+                    {weekBars.map((order) => {
                     const startRaw = order.created_at || order.order_date;
                     const endRaw = order.delivery_date;
                     if (!startRaw || !endRaw) return null;
@@ -366,22 +393,23 @@ export function AgendaView() {
                      const isHistorical = isDelivered || isCancelled;
 
                      return (
-                       <div 
+                       <div
                          key={order.id}
                          className={cn(
                            "rounded-full relative group/bar overflow-hidden shadow-sm border border-white/5 transition-all",
-                           isHistorical ? "h-[1px] opacity-30" : "h-1.5"
+                           isHistorical ? "h-px opacity-30" : barH
                          )}
-                         style={{ 
-                           marginLeft: `${left}%`, 
+                         style={{
+                           marginLeft: `${left}%`,
                            width: `${width}%`,
-                           background: isCancelled 
+                           filter: isHistorical ? undefined : `brightness(${jitter(order.id)})`,
+                           background: isCancelled
                              ? 'linear-gradient(to right, #FCA5A520, #EF444440)'
                              : `linear-gradient(to right, ${itemColor}${toHex(startAlpha)}, ${itemColor}${toHex(endAlpha)})`
                          }}
                        >
                           {/* Status hint (barre subtile à gauche) */}
-                          <div 
+                          <div
                             className={cn(
                               "absolute inset-y-0 left-0 w-1 opacity-50 shrink-0",
                               isHistorical && "hidden"
@@ -391,7 +419,9 @@ export function AgendaView() {
                        </div>
                      );
                  })}
-              </div>
+                  </div>
+                );
+              })()}
             </div>
           ))}
 

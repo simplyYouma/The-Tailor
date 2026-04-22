@@ -12,6 +12,7 @@ import { Dropdown } from '@/components/common/Dropdown';
 import * as fabricService from '@/services/fabricService';
 import type { Fabric, FabricCreatePayload } from '@/types';
 import { FABRIC_TYPES } from '@/types/constants';
+import { useFabricTypeStore } from '@/store/fabricTypeStore';
 
 export function FabricForm() {
   const closeModal = useUIStore((s) => s.closeModal);
@@ -29,6 +30,8 @@ export function FabricForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const dynamicTypes = useFabricTypeStore((s) => s.types);
+  const fabricTypeOptions: string[] = dynamicTypes.length > 0 ? dynamicTypes.map(t => t.name) : FABRIC_TYPES;
 
   useEffect(() => {
     if (modalPayload) {
@@ -156,7 +159,7 @@ export function FabricForm() {
               <label className="text-[10px] font-black uppercase tracking-widest text-[#78716C] ml-1">Type de Matière</label>
               <Dropdown 
                 label="Type de tissu"
-                options={FABRIC_TYPES.map(t => ({ id: t, label: t }))}
+                options={fabricTypeOptions.map(t => ({ id: t, label: t }))}
                 selectedId={formData.type}
                 onSelect={(opt) => setFormData({ ...formData, type: opt.id })}
                 className="w-full"

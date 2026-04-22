@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Filter, Check, ChevronRight, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MODEL_CATEGORIES, MODEL_GENDERS } from '@/types/constants';
+import { useModelCategoryStore } from '@/store/modelCategoryStore';
 
 interface CatalogFiltersProps {
   categoryFilter: string;
@@ -25,6 +26,8 @@ export function CatalogFilters({
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'gender' | 'category'>('gender');
   const popoverRef = useRef<HTMLDivElement>(null);
+  const dynamicCats = useModelCategoryStore((s) => s.categories);
+  const categoryOptions = dynamicCats.length > 0 ? dynamicCats.map(c => c.name) : MODEL_CATEGORIES;
 
   // Close on outside click
   useEffect(() => {
@@ -137,7 +140,7 @@ export function CatalogFilters({
                 <div className="space-y-3">
                   <p className="text-[9px] font-black uppercase tracking-widest text-[#D6D3D1] mb-4">Filtrer par Catégorie</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {['Tous', ...MODEL_CATEGORIES].map(c => (
+                    {['Tous', ...categoryOptions].map(c => (
                       <button
                         key={c}
                         onClick={() => onCategoryChange(c)}

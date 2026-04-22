@@ -32,7 +32,9 @@ import {
   isSameDay, 
   isToday,
   parseISO,
-  differenceInDays
+  differenceInDays,
+  startOfDay,
+  isBefore
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useUIStore } from '@/store/uiStore';
@@ -43,6 +45,8 @@ import { AudioRecorder } from '@/components/common/AudioRecorder';
 import { FileUploader } from '@/components/common/FileUploader';
 import { cn } from '@/lib/utils';
 import { CURRENCY, PAYMENT_METHODS, MODEL_CATEGORIES, MODEL_GENDERS, getItemColor, FABRIC_TYPES } from '@/types/constants';
+import { useModelCategoryStore } from '@/store/modelCategoryStore';
+import { useFabricTypeStore } from '@/store/fabricTypeStore';
 import type { PaymentMethod, CatalogModel, Gender, Fabric } from '@/types';
 import * as orderService from '@/services/orderService';
 import * as catalogService from '@/services/catalogService';
@@ -67,7 +71,11 @@ export function NewOrderCheckout() {
   const [referenceImages, setReferenceImages] = useState<string[]>([]);
   const [customModelName, setCustomModelName] = useState('');
   const [customModelGender, setCustomModelGender] = useState<Gender>('Femme');
-  const [customModelCategory, setCustomModelCategory] = useState(MODEL_CATEGORIES[0]);
+  const dynamicCats = useModelCategoryStore((s) => s.categories);
+  const categoryOptions = dynamicCats.length > 0 ? dynamicCats.map(c => c.name) : MODEL_CATEGORIES;
+  const dynamicFT = useFabricTypeStore((s) => s.types);
+  const fabricTypeList: string[] = dynamicFT.length > 0 ? dynamicFT.map(t => t.name) : FABRIC_TYPES;
+  const [customModelCategory, setCustomModelCategory] = useState(categoryOptions[0]);
   const [saveToCatalog, setSaveToCatalog] = useState(false);
 
   const [fabricPhoto, setFabricPhoto] = useState<string | null>(null);
@@ -476,7 +484,7 @@ export function NewOrderCheckout() {
                           <div>
                              <p className="text-[9px] font-black uppercase tracking-widest text-[#A8A29E] mb-4">Catégorie</p>
                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                {MODEL_CATEGORIES.map(c => (
+                                {categoryOptions.map(c => (
                                    <button
                                       key={c}
                                       type="button"
@@ -600,7 +608,7 @@ export function NewOrderCheckout() {
                     >
                       Tout
                     </button>
-                    {FABRIC_TYPES.slice(0, 5).map(t => (
+                    {fabricTypeList.slice(0, 5).map(t => (
                       <button
                         key={t}
                         onClick={() => setFabricPickerType(t)}
@@ -766,20 +774,27 @@ export function NewOrderCheckout() {
                        const isSelected = deliveryDate && isSameDay(parseISO(deliveryDate), day);
                        const isOut = !isSameMonth(day, agendaMonth);
                        const isTodayDay = isToday(day);
-                       
+                       const isPast = isBefore(startOfDay(day), startOfDay(new Date()));
+                       const isDisabled = isOut || isPast;
+
                        return (
                          <button
                            key={day.toISOString()}
                            type="button"
-                           onClick={() => setDeliveryDate(format(day, 'yyyy-MM-dd'))}
+                           disabled={isDisabled}
+                           onClick={() => !isDisabled && setDeliveryDate(format(day, 'yyyy-MM-dd'))}
                            className={cn(
                              "relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all border",
-                             isOut ? "opacity-10 cursor-default border-transparent" : "hover:scale-95",
-                             isSelected 
-                               ? "bg-[#1C1917] border-[#1C1917] text-white shadow-lg z-20" 
-                               : isTodayDay 
-                                 ? "bg-white border-[#B68D40] text-[#B68D40]" 
-                                 : "bg-white border-[#E7E5E4] text-[#78716C] hover:border-[#B68D40]/30"
+                             isOut && "opacity-10 cursor-default border-transparent",
+                             isPast && !isOut && "opacity-40 cursor-not-allowed bg-[#FAF9F6] border-transparent line-through",
+                             !isDisabled && "hover:scale-95",
+                             isSelected
+                               ? "bg-[#1C1917] border-[#1C1917] text-white shadow-lg z-20"
+                               : isTodayDay
+                                 ? "bg-white border-[#B68D40] text-[#B68D40]"
+                                 : !isDisabled
+                                   ? "bg-white border-[#E7E5E4] text-[#78716C] hover:border-[#B68D40]/30"
+                                   : ""
                            )}
                          >
                            <span className="text-[10px] font-bold">{format(day, 'd')}</span>
@@ -798,39 +813,53 @@ export function NewOrderCheckout() {
                      })}
 
                      {/* Timeline Overlay (Expert Visibility) */}
-                     <div className="absolute inset-x-0 bottom-0 top-0 pointer-events-none px-1 flex flex-col justify-center gap-0.5 opacity-80">
-                        {monthlyOrders.filter(o => {
-                          try {
-                            const start = parseISO(o.created_at);
-                            const end = parseISO(o.delivery_date!);
-                            return (start <= week[6] && end >= week[0]);
-                          } catch { return false; }
-                        }).slice(0, 3).map((order) => {
-                          const start = parseISO(order.created_at);
-                          const end = parseISO(order.delivery_date!);
-                          const actualStart = start > week[0] ? start : week[0];
-                          const actualEnd = end < week[6] ? end : week[6];
-                          const sIdx = week.findIndex(d => isSameDay(d, actualStart));
-                          const eIdx = week.findIndex(d => isSameDay(d, actualEnd));
-                          if (sIdx === -1 || eIdx === -1) return null;
-                          const left = (sIdx * (100/7)) + 0.5;
-                          const width = ((eIdx - sIdx + 1) * (100/7)) - 1;
-
-                          const color = getItemColor(order.id);
-                          return (
-                            <div 
-                              key={order.id} 
-                              className="h-1 rounded-full border border-white/20 shadow-sm" 
-                              style={{ 
-                                marginLeft: `${left}%`, 
-                                width: `${width}%`, 
-                                backgroundColor: color,
-                                boxShadow: `0 1px 2px ${color}40`
-                              }} 
-                            />
-                          );
-                        })}
-                     </div>
+                     {(() => {
+                       const weekBars = monthlyOrders.filter(o => {
+                         try {
+                           const start = parseISO(o.created_at);
+                           const end = parseISO(o.delivery_date!);
+                           return (start <= week[6] && end >= week[0]);
+                         } catch { return false; }
+                       });
+                       const count = weekBars.length;
+                       const barH = count <= 8 ? 'h-1' : count <= 15 ? 'h-0.5' : 'h-px';
+                       const gapCls = count <= 8 ? 'gap-0.5' : 'gap-px';
+                       const jitter = (id: string) => {
+                         let h = 5381;
+                         for (let i = 0; i < id.length; i++) h = (h * 33) ^ id.charCodeAt(i);
+                         const n = Math.abs(h) % 3;
+                         return n === 0 ? 1 : n === 1 ? 0.72 : 1.28;
+                       };
+                       return (
+                         <div className={cn("absolute inset-x-0 bottom-0 top-0 pointer-events-none px-1 flex flex-col justify-center opacity-80", gapCls)}>
+                           {weekBars.map((order) => {
+                             const start = parseISO(order.created_at);
+                             const end = parseISO(order.delivery_date!);
+                             const actualStart = start > week[0] ? start : week[0];
+                             const actualEnd = end < week[6] ? end : week[6];
+                             const sIdx = week.findIndex(d => isSameDay(d, actualStart));
+                             const eIdx = week.findIndex(d => isSameDay(d, actualEnd));
+                             if (sIdx === -1 || eIdx === -1) return null;
+                             const left = (sIdx * (100/7)) + 0.5;
+                             const width = ((eIdx - sIdx + 1) * (100/7)) - 1;
+                             const color = getItemColor(order.id);
+                             return (
+                               <div
+                                 key={order.id}
+                                 className={cn("rounded-full border border-white/20 shadow-sm", barH)}
+                                 style={{
+                                   marginLeft: `${left}%`,
+                                   width: `${width}%`,
+                                   backgroundColor: color,
+                                   filter: `brightness(${jitter(order.id)})`,
+                                   boxShadow: `0 1px 2px ${color}40`
+                                 }}
+                               />
+                             );
+                           })}
+                         </div>
+                       );
+                     })()}
                    </div>
                  ))}
                </div>

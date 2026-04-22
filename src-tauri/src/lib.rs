@@ -101,6 +101,28 @@ fn save_license_key(app_handle: AppHandle, key: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn get_secure_storage(app_handle: AppHandle, key: String) -> String {
+    let data_dir = match app_handle.path().app_data_dir() {
+        Ok(dir) => dir,
+        Err(_) => return String::new(),
+    };
+    fs::read_to_string(data_dir.join(format!(".{}", key)))
+        .unwrap_or_default()
+        .trim()
+        .to_string()
+}
+
+#[tauri::command]
+fn set_secure_storage(app_handle: AppHandle, key: String, value: String) -> Result<(), String> {
+    let data_dir = app_handle.path().app_data_dir().map_err(|e| e.to_string())?;
+    if !data_dir.exists() {
+        fs::create_dir_all(&data_dir).map_err(|e| e.to_string())?;
+    }
+    fs::write(data_dir.join(format!(".{}", key)), value).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
 fn hash_password(password: String) -> Result<String, String> {
     bcrypt::hash(password, bcrypt::DEFAULT_COST).map_err(|e| e.to_string())
 }
@@ -175,6 +197,8 @@ pub fn run() {
             verify_license,
             get_license_key,
             save_license_key,
+            get_secure_storage,
+            set_secure_storage,
             hash_password,
             verify_password,
             generate_id,

@@ -1,124 +1,164 @@
-import { ShieldCheck, Info, Quote, Award, Fingerprint } from 'lucide-react';
+import { ShieldCheck, Mail, Phone, AlertTriangle, Scale, Lock } from 'lucide-react';
 
 export function SecurityLicenseView() {
   return (
-    <div className="max-w-4xl space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-      {/* ─── Majestic Header ─── */}
-      <header className="relative py-8 border-b border-[#E7E5E4]/60">
-        <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#B68D40]/5 rounded-full blur-2xl" />
-        <h3 className="text-4xl font-serif italic text-[#1C1917] tracking-tight leading-none">
-          Propriété Fatoumata Y. Sokona
-        </h3>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 mt-6">
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#B68D40] flex items-center gap-2">
-            fysokona@gmail.com <span className="opacity-30">•</span> +223 90041369
-          </p>
-          <div className="h-px flex-1 bg-gradient-to-r from-[#E7E5E4] to-transparent opacity-50" />
-        </div>
+    <div className="max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-20">
+      
+      {/* ─── Top Header ─── */}
+      <header className="border-b border-border/60 pb-8">
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground mb-4">
+          Propriété Intellectuelle
+        </p>
+        <h1 className="text-5xl md:text-6xl font-serif text-foreground leading-tight">
+          Contrat De Licence & Conditions
+        </h1>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
         
-        {/* ─── Main Document Section ─── */}
-        <div className="lg:col-span-7 space-y-12">
+        {/* ─── Main Content (Left) ─── */}
+        <div className="lg:col-span-7 space-y-16">
           
-          {/* Official Accord Card */}
-          <div className="relative bg-white border border-[#E7E5E4] rounded-[3rem] p-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.03)] overflow-hidden group">
-            {/* Subtle Watermark */}
-            <ShieldCheck className="absolute -bottom-8 -right-8 w-48 h-48 text-[#FAF9F6] -rotate-12 transition-transform duration-1000 group-hover:rotate-0" />
+          {/* Section: Préambule Légal */}
+          <section className="space-y-8">
+            <div className="flex items-center gap-3">
+              <Scale className="w-5 h-5 text-foreground/40" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">
+                Préambule Légal
+              </h2>
+            </div>
             
-            <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-10 h-10 bg-[#1C1917] rounded-xl flex items-center justify-center text-[#B68D40] shadow-lg shadow-black/10">
-                  <Fingerprint className="w-5 h-5 stroke-[1.5]" />
-                </div>
-                <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-[#1C1917]">Protocole d'Usage Atelier</h4>
+            <div className="relative pl-12 py-1 border-l border-foreground/10">
+              <p className="text-lg font-serif italic text-foreground/80 leading-relaxed">
+                "Le présent contrat régit l'utilisation du logiciel de gestion The Tailor. L'installation, l'accès ou l'utilisation de ce système par l'établissement client atteste de l'acceptation pleine et entière des présentes conditions."
+              </p>
+            </div>
+          </section>
+
+          {/* Section: Clause de Non-Partage */}
+          <section className="space-y-10">
+            <div className="flex items-center gap-3">
+              <Lock className="w-5 h-5 text-foreground/40" />
+              <h2 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">
+                Clause de Non-Partage & Protection
+              </h2>
+            </div>
+
+            <div className="space-y-10">
+              <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                  1. Exclusivité du Logiciel
+                </h3>
+                <p className="text-[13px] text-muted-foreground leading-relaxed font-medium">
+                  Ce logiciel est fourni sous forme d'abonnement pour l'usage exclusif de l'établissement détenteur de la licence. Tout partage de code source, de fichiers d'installation, ou d'accès utilisateur avec des tiers non autorisés (autres salons, consultants externes, ou particuliers) constitue une violation grave du contrat.
+                </p>
               </div>
 
-              <div className="space-y-8 text-sm text-[#78716C] leading-relaxed">
-                <section>
-                  <p className="font-serif italic text-[15px] text-[#1C1917] mb-2 font-medium">Article I : Œuvre Protégée</p>
-                  <p className="font-medium text-[13px]">
-                    Le présent système "The Tailor" constitue une œuvre de l'esprit, développée sur mesure pour les artisans de la haute couture. Sa structure, son code et son interface sont régis par les lois internationales de propriété intellectuelle.
-                  </p>
-                </section>
-
-                <div className="relative py-8 px-10 bg-[#FAF9F6] rounded-[2rem] border-l-2 border-[#B68D40]/30 overflow-hidden">
-                  <Quote className="absolute top-4 right-6 w-12 h-12 text-[#1C1917]/5 -scale-x-100" />
-                  <p className="relative z-10 italic text-[#1C1917] font-serif text-[14px] leading-relaxed">
-                    L'utilisateur s'engage formellement au respect de l'unicité de cette licence. Le partage, la reproduction ou l'exploitation tiers sans l'accord explicite du créateur est strictement prohibé sous peine de révocation immédiate de l'accès.
-                  </p>
-                </div>
-
-                <section>
-                  <p className="font-serif italic text-[15px] text-[#1C1917] mb-2 font-medium">Article II : Engagement de Confidentialité</p>
-                  <p className="font-medium text-[13px]">
-                    L'utilisation sur cette machine engage la responsabilité du détenteur. Chaque déploiement est unique et certifié pour un usage strictement professionnel au sein de l'unité de confection enregistrée.
-                  </p>
-                </section>
+              <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                  2. Propriété Intellectuelle
+                </h3>
+                <p className="text-[13px] text-muted-foreground leading-relaxed font-medium">
+                  The Tailor demeure la propriété exclusive du développeur original. Toute tentative de rétro-ingénierie, de de-compilation ou de modification logicielle sans autorisation écrite fera l'objet de poursuites judiciaires conformément aux lois sur le droit d'auteur.
+                </p>
               </div>
+
+              <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                  3. Utilisation Vaut Acceptation
+                </h3>
+                <p className="text-[13px] italic text-muted-foreground leading-relaxed font-medium">
+                  Le simple fait de disposer du logiciel sur ses terminaux prouve l'acceptation expresse des termes de ce contrat. L'abonnement est personnel et non transmissible sans accord express du propriétaire.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Warning Banner */}
+          <div className="p-10 bg-[#F5F5F5] rounded-[3rem] border border-black/5 flex gap-8 items-start">
+            <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+              <AlertTriangle className="w-6 h-6 text-brand-red stroke-[2.5]" />
+            </div>
+            <div className="space-y-4 pt-2">
+              <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-foreground">
+                Avis de Sanction
+              </h4>
+              <p className="text-sm text-muted-foreground leading-relaxed font-medium italic">
+                Le non-respect de ces clauses entraîne la suspension immédiate de la licence sans préavis ni remboursement, ainsi que la désactivation à distance du système de gestion pour protéger les intérêts du propriétaire.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* ─── Sidebar info / Label ─── */}
+        {/* ─── Sidebar (Right) ─── */}
         <div className="lg:col-span-5 space-y-8">
           
-          {/* Premium Label Initiative */}
-          <div className="p-10 bg-[#1C1917] rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden group">
-             {/* Decorative lines (tailor's tape feel) */}
-             <div className="absolute top-0 right-10 w-0.5 h-full bg-[#B68D40]/5" />
-             <div className="absolute top-0 right-12 w-0.5 h-full bg-[#B68D40]/5" />
-             
-             {/* National Colors (Sober accent) */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 flex h-1 w-20">
-               <div className="flex-1 bg-[#009A44]" />
-               <div className="flex-1 bg-[#FCD116]" />
-               <div className="flex-1 bg-[#CE1126]" />
-             </div>
-             
-             <div className="relative z-10">
-               <div className="flex justify-between items-start mb-12">
-                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-[#B68D40] backdrop-blur-md border border-white/10 group-hover:bg-[#B68D40] group-hover:text-white transition-colors duration-500">
-                   <Award className="w-6 h-6 stroke-[1.2]" />
-                 </div>
-                 <div className="text-right">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Certification</p>
-                    <p className="text-[12px] font-serif italic text-[#B68D40]">Elite Edition</p>
-                 </div>
-               </div>
+          {/* Owner Info Card */}
+          <div className="bg-[#0A0A0A] text-white p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl space-y-12 md:space-y-16">
+            <div className="space-y-3 md:space-y-4">
+              <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.6em] text-white/30">
+                Contact Propriétaire
+              </p>
+              <h2 className="text-3xl md:text-4xl font-serif italic text-white leading-tight">Youba Sokona</h2>
+            </div>
 
-                <div className="space-y-6">
-                  <div>
-                     <h5 className="text-[13px] font-black uppercase tracking-widest text-white mb-2">Fatoumata Y. Sokona</h5>
-                     <div className="h-px w-8 bg-[#B68D40] mb-6" />
-                  </div>
-                 <p className="text-[11px] text-white/50 leading-loose uppercase tracking-[0.1em] font-medium">
-                   Artisanat numérique Malien au service des maîtres tailleurs. Chaque point de code est assemblé avec rigueur pour élever les standards de la gestion artisanale.
-                 </p>
-               </div>
+            <div className="space-y-8 md:space-y-10">
+              {/* Mail Field */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group min-w-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-all duration-500">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-white/30 truncate">E-mail Officiel</p>
+                  <p className="text-xs md:text-sm font-bold tracking-tight break-all sm:break-normal truncate hover:text-white/80 transition-colors">
+                    contact@youbasokona.com
+                  </p>
+                </div>
+              </div>
 
-               <div className="mt-12 pt-8 border-t border-white/5 flex items-center justify-between">
-                 <div className="flex -space-x-2">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="w-6 h-6 bg-white/5 rounded-full border border-white/10" />
-                    ))}
-                 </div>
-                  <p className="text-[8px] font-black uppercase tracking-widest text-[#B68D40]">Propriété Fatoumata Y. Sokona</p>
-               </div>
-             </div>
+              {/* Phone Field */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group min-w-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-all duration-500">
+                  <Phone className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-white/30 truncate">Ligne Directe</p>
+                  <p className="text-xs md:text-sm font-bold tracking-tight truncate">+223 70 00 00 00</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Elite Status Card Tiny */}
+            <div className="p-6 md:p-8 bg-white/5 rounded-[1.5rem] md:rounded-[2rem] border border-white/10 space-y-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 md:w-4 md:h-4 text-white/60" />
+                </div>
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] truncate">Statut Elite</p>
+              </div>
+              <p className="text-[10px] md:text-xs text-white/40 italic leading-relaxed">
+                Système de gestion tactique protégé par cryptage dynamique des licences.
+              </p>
+            </div>
           </div>
 
-          {/* Simple Protection Info Box */}
-          <div className="p-8 border border-[#E7E5E4] rounded-[2.5rem] bg-[#FAF9F6]/50 flex items-start gap-4">
-            <Info className="w-5 h-5 text-[#B68D40] mt-0.5 opacity-40" />
-            <p className="text-[10px] text-[#A8A29E] leading-relaxed uppercase font-black tracking-widest">
-              L'intégrité de la licence est vérifiée périodiquement via le protocole de sécurité Hub pour garantir la pérennité de votre Atelier.
+          {/* Legal Validation Card */}
+          <div className="p-16 border border-black/10 rounded-[3rem] bg-white text-center space-y-8 shadow-[0_40px_80px_rgba(0,0,0,0.03)]">
+            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-muted-foreground">
+              Validité Contractuelle
             </p>
+            <div className="space-y-4">
+              <p className="text-5xl font-serif italic text-foreground tracking-tight">Conforme</p>
+              <div className="w-16 h-[1px] bg-black/10 mx-auto mt-10 mb-6" />
+              <p className="text-[11px] font-black uppercase tracking-[0.6em] text-muted-foreground">
+                Usage Autorisé
+              </p>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
   );
 }
+

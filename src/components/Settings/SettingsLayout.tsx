@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Tag, Users, Ruler, Database, ChevronRight, ShieldCheck, History } from 'lucide-react';
+import { Tag, Users, Ruler, Database, ChevronRight, ShieldCheck, History, Layers, Package } from 'lucide-react';
 import { BrandSettings } from './BrandSettings';
 import { TeamSettings } from './TeamSettings';
 import { MeasurementSettings } from './MeasurementSettings';
+import { CategorySettings } from './CategorySettings';
+import { FabricTypeSettings } from './FabricTypeSettings';
 import { SystemSettings } from './SystemSettings';
 import { ModuleAccessSettings } from './ModuleAccessSettings';
 import { AuditLogView } from './AuditLog';
@@ -11,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useUIStore } from '@/store/uiStore';
 import { useEffect } from 'react';
 
-type SettingsTab = 'brand' | 'team' | 'permissions' | 'measurements' | 'system' | 'audit' | 'license';
+type SettingsTab = 'brand' | 'team' | 'permissions' | 'measurements' | 'categories' | 'fabric_types' | 'system' | 'audit' | 'license';
 
 export function SettingsLayout() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('brand');
@@ -33,6 +35,8 @@ export function SettingsLayout() {
     { id: 'permissions' as const, label: 'Accès Modules', icon: <ShieldCheck className="w-4 h-4" /> },
     { id: 'audit' as const, label: 'Journal d\'Audit', icon: <History className="w-4 h-4" /> },
     { id: 'measurements' as const, label: 'Réglages Mesures', icon: <Ruler className="w-4 h-4" /> },
+    { id: 'categories' as const, label: 'Catégories Modèles', icon: <Layers className="w-4 h-4" /> },
+    { id: 'fabric_types' as const, label: 'Types de Tissus', icon: <Package className="w-4 h-4" /> },
     { id: 'system' as const, label: 'Système & Maintenance', icon: <Database className="w-4 h-4" /> },
     { id: 'license' as const, label: 'Garanties & Licence', icon: <ShieldCheck className="w-4 h-4" /> },
   ];
@@ -85,6 +89,8 @@ export function SettingsLayout() {
         {activeTab === 'permissions' && <ModuleAccessSettings />}
         {activeTab === 'audit' && <AuditLogView />}
         {activeTab === 'measurements' && <MeasurementSettings />}
+        {activeTab === 'categories' && <CategorySettings />}
+        {activeTab === 'fabric_types' && <FabricTypeSettings />}
         {activeTab === 'system' && <SystemSettings />}
         {activeTab === 'license' && <SecurityLicenseView />}
       </main>

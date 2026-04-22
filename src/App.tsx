@@ -34,6 +34,8 @@ import { LoginScreen } from '@/components/Auth/LoginScreen';
 import { useUIStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useModelCategoryStore } from '@/store/modelCategoryStore';
+import { useFabricTypeStore } from '@/store/fabricTypeStore';
 
 // Modules
 import { ClientList } from '@/components/Clients/ClientList';
@@ -51,6 +53,8 @@ import { CatalogPicker } from './components/Catalog/CatalogPicker';
 import { AgendaView } from '@/components/Agenda/AgendaView';
 import { FabricStock } from './components/Inventory/FabricStock';
 import { FabricForm } from './components/Inventory/FabricForm';
+import { FabricSaleModal } from './components/Inventory/FabricSaleModal';
+import { FabricSaleReceipt } from './components/Inventory/FabricSaleReceipt';
 import { AnalyticsDashboard } from './components/Dashboard/AnalyticsDashboard';
 import { SettingsLayout } from './components/Settings/SettingsLayout';
 import { UserForm } from './components/Settings/UserForm';
@@ -112,6 +116,10 @@ function App() {
     
     // 🎨 Sync Boutique
     refreshSettings().catch(console.error);
+
+    // 🏷️ Sync Categories
+    useModelCategoryStore.getState().fetchCategories().catch(console.error);
+    useFabricTypeStore.getState().fetchTypes().catch(console.error);
     
     // ⚙️ Sync Settings
     settingsService.getSettings().then(() => {
@@ -403,6 +411,8 @@ function App() {
         {modalType === 'model_detail' && <ModelDetail />}
         {modalType === 'catalog_picker' && <CatalogPicker payload={modalPayload as any} />}
         {modalType === 'fabric_form' && <FabricForm />}
+        {modalType === 'fabric_sale' && <FabricSaleModal />}
+        {modalType === 'fabric_sale_receipt' && <FabricSaleReceipt />}
         {modalType === 'user_form' && <UserForm />}
         <ConfirmModal />
       </div>
